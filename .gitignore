@@ -1,0 +1,7 @@
+.idea/
+rules/
+__pycache__
+
+*.pyc
+*.model
+~*

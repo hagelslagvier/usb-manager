@@ -1,0 +1,31 @@
+ACTION!="add|change", GOTO="end"
+SUBSYSTEM!="usb", GOTO="end"
+ENV{DEVTYPE}!="usb_device", GOTO="end"
+
+# [SYSTEM_BEGIN] --- System devices
+{%- for device in data.system_devices %}
+DEVPATH=="{{device.path}}", ENV{AUTHORIZED_BY_USER}="1"
+{%- endfor %}
+# [SYSTEM_END]
+
+# [WHITELIST_BEGIN] --- White list devices
+{%- for device in data.whitelist_devices %}
+{%- if serial in device %}
+DEVPATH=="{{device.path}}", ATTR{idVendor}=="{{device.vendor_id}}", ATTR{idProduct}=="{{device.product_id}}", ATTR{serial}=="{{device.serial}}", ENV{AUTHORIZED_BY_USER}="1"
+{%- else %}
+DEVPATH=="{{device.path}}", ATTR{idVendor}=="{{device.vendor_id}}", ATTR{idProduct}=="{{device.product_id}}", ENV{AUTHORIZED_BY_USER}="1"
+{%- endif %}
+{%- endfor %}
+# [WHITELIST_END]
+
+# [BLACKLIST_BEGIN] --- Black list devices
+{%- for device in data.blacklist_devices%}
+{%- if serial in device %}
+ATTR{idVendor}=="{{device.vendor_id}}", ATTR{idProduct}=="{{device.product_id}}", ATTR{serial}=="{{device.serial}}", ENV{AUTHORIZED_BY_USER}="0"
+{%- else %}
+ATTR{idVendor}=="{{device.vendor_id}}", ATTR{idProduct}=="{{device.product_id}}", ENV{AUTHORIZED_BY_USER}="0"
+{%- endif %}
+{%- endfor %}
+# [BLACKLIST_END]
+
+LABEL="end"

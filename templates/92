@@ -1,0 +1,7 @@
+ACTION!="add|change", GOTO="end"
+SUBSYSTEM!="usb", GOTO="end"
+ENV{DEVTYPE}!="usb_device", GOTO="end"
+
+ENV{AUTHORIZED_BY_USER}=="0", ATTR{authorized}="0"
+
+LABEL="end"
